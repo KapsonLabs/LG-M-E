@@ -25,7 +25,7 @@ SECRET_KEY = '#a&h20t299j*)6=%^+adyw54jiq6c8j5--8^ob*h&x#1rdl4r)'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['localhost', '127.0.0.1']
 
 
 # Application definition
@@ -37,6 +37,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'accounts',
+    'rest_framework',
 ]
 
 MIDDLEWARE = [
@@ -48,6 +50,13 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+
+REST_FRAMEWORK = {
+    
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'yourapp.authentication.JSONWebTokenAuthentication',
+    ),
+}
 
 ROOT_URLCONF = 'le_me_project.urls'
 
@@ -75,8 +84,12 @@ WSGI_APPLICATION = 'le_me_project.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'lgmedb',
+        'USER': 'djangoappguy',
+        'PASSWORD': 'django1234',
+        'HOST': 'localhost',
+        'PORT': '5432',
     }
 }
 
@@ -118,3 +131,5 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/2.2/howto/static-files/
 
 STATIC_URL = '/static/'
+
+AUTH_USER_MODEL = 'accounts.User'
