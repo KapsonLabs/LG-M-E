@@ -54,7 +54,7 @@ MIDDLEWARE = [
 REST_FRAMEWORK = {
     
     'DEFAULT_AUTHENTICATION_CLASSES': (
-        'yourapp.authentication.JSONWebTokenAuthentication',
+        'accounts.authentication.JSONWebTokenAuthentication',
     ),
 }
 
