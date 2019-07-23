@@ -1,5 +1,5 @@
 from rest_framework.test import APITestCase, APIClient
-from django.contrib.auth import get_user_model
+from accounts.models import User
 from rest_framework.views import status
 from rest_framework.authtoken.models import Token
 
@@ -15,8 +15,9 @@ class BaseViewTest(APITestCase):
     def setUp(self):
         #add some test data
         self.user = self.setup_user()
-        self.token = Token.objects.create(user=self.user)
-        self.token.save()
+        self.response = self.authenticate_test_user("test", "test1234")
+        self.token = self.response.data['token']
+        self.auth = 'Bearer {}'.format(self.token)
         self.create_district(self.user, "Kampala", "EASTERN", 2)
         self.create_district(self.user, "Masaka", "WESTERN", 5)
 
@@ -28,7 +29,6 @@ class BaseViewTest(APITestCase):
 
     @staticmethod
     def setup_user():
-        User = get_user_model()
         return User.objects.create_user(
             username='test',
             email='testuser@test.com',
@@ -36,21 +36,21 @@ class BaseViewTest(APITestCase):
             is_administrator=True
         )
 
+    def authenticate_test_user(self, username, password):
+        return self.client.post(reverse('login-endpoint'), {"username":username, "password":password})
 
 class TestGetAllDistricts(BaseViewTest):
     
     def test_list_all_districts(self):
-        # self.client.login(username="test", password="test1234")
-        self.client.credentials(HTTP_AUTHORIZATION='Token {}'.format(self.token.key))
-        response = self.client.get(reverse(self.uri))
+        response = self.client.get(reverse(self.uri), HTTP_AUTHORIZATION=self.auth)
 
         #fetch test data from the database
         expected = District.objects.all()
         serialized = DistrictListSerializer(expected, many=True)
-        #self.assertEqual(serialized.data, response.data)
+        self.assertEqual(serialized.data, response.data)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
-class TestCreateDistricts(APITestCase):
+class TestCreateDistricts(BaseViewTest):
 
     def test_create_district(self):
         params = {
@@ -58,7 +58,7 @@ class TestCreateDistricts(APITestCase):
             "district_region":"EASTERN",
             "district_size_hectares":2
         }
-        response = self.client.post(reverse('district_create_view'), params)
+        response = self.client.post(reverse('district_create_view'), params,HTTP_AUTHORIZATION=self.auth)
         serialized = DistrictCreateSerializer(params)
         self.assertEqual(serialized.data, response.data)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
