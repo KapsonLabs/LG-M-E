@@ -1,0 +1,10 @@
+[report]
+omit =
+    */python?.?/*
+    */__pycache__/*
+    *.pyc
+    */env/*
+    */usr/lib/python3/*
+    */__init__.py
+    */models.py
+    le_me_project/manage.py
