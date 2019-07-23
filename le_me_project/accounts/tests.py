@@ -1,19 +1,18 @@
 from rest_framework.test import APITestCase
-from rest_framework.test import APIRequestFactory
-from django.contrib.auth import get_user_model
+from rest_framework.test import APIRequestFactory, APIClient
+from accounts.models import User
+from django.urls import reverse
 
 from accounts import views
 
 class TestAccounts(APITestCase):
     def setUp(self):
         self.user = self.setup_user()
-        self.factory = APIRequestFactory()
-        self.view = views.UserAuthenticate.as_view()
-        self.uri = '/auth/login/'
+        self.client = APIClient()
+        self.uri = 'login-endpoint'
 
     @staticmethod
     def setup_user():
-        User = get_user_model()
         return User.objects.create_user(
             username='test',
             email='testuser@test.com',
@@ -25,7 +24,6 @@ class TestAccounts(APITestCase):
             "username":"test",
             "password":"test"
         }
-        request = self.factory.post(self.uri, params)
-        response = self.view(request)
+        response = self.client.post(reverse('login-endpoint'), params)
         self.assertEqual(response.status_code, 200,
                         'Expected Response code 200, got {0}'.format(response.status_code))
