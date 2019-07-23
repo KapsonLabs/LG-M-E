@@ -1,0 +1,7 @@
+REGIONS = (
+    ("NORTHERN","NORTHERN"),
+    ("WESTERN","WESTERN"),
+    ("CENTRAL","CENTRAL"),
+    ("EASTERN","EASTERN"),
+    ("WESTNILE","WESTNILE"),
+)
